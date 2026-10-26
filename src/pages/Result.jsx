@@ -8,12 +8,18 @@ export default function Result() {
 
   const { result, demo } = state;
   const tips = RECOMMENDATIONS[result.level] || [];
+  const strongestFactor = result.topFactors?.[0];
 
   return (
     <div className="stack">
       <section className="card center">
         <h2>Your stress score</h2>
         <StressGauge score={result.score} />
+        <p className="muted">
+          Your answers indicate a {result.level?.toLowerCase() || 'reported'} stress level
+          {result.responseCount ? `, based on ${result.responseCount} responses` : ''}.
+          {strongestFactor && ` ${strongestFactor.category} was your strongest stress signal at ${strongestFactor.impact}%.`}
+        </p>
       </section>
 
       <section className="card">

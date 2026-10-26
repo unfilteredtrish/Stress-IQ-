@@ -25,11 +25,15 @@ export async function login({ name, email, password }) {
 }
 
 export async function submitAnswers(userId, answers) {
+  const analysis = computeScore(answers);
   try {
     const { data } = await api.post('/submit', { userId, answers });
-    return { result: data, demo: false }; // expected: { score, level, topFactors: [{category, impact}] }
+    return {
+      result: { ...analysis, ...data, topFactors: analysis.topFactors, responseCount: analysis.responseCount },
+      demo: false,
+    }; // expected: { score, level, topFactors: [{category, impact}] }
   } catch {
-    const result = computeScore(answers);
+    const result = analysis;
     const entry = { score: result.score, level: result.level, date: new Date().toISOString() };
     localStorage.setItem(HISTORY_KEY(userId), JSON.stringify([...readLocal(userId), entry]));
     return { result, demo: true };
